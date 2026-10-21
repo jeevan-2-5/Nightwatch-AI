@@ -1,0 +1,1230 @@
+# MASTER PROMPT: BUILD NIGHTWATCH AI — AUTONOMOUS INCIDENT INVESTIGATION PLATFORM
+
+## 1. Your Role
+
+Act as a senior full-stack engineer, AI/ML engineer, Site Reliability Engineer (SRE), backend architect, and premium SaaS product designer.
+
+Build a complete, production-oriented application named **Nightwatch AI**. This must be a working software project with a frontend, backend, database, machine-learning pipeline, background workers, APIs, monitoring, and deployment configuration.
+
+Do not create only a landing page, static mockup, or dashboard filled with hardcoded numbers. Build the actual application, with a polished demo mode when external integrations or infrastructure are unavailable.
+
+Make reasonable technical decisions independently. Do not stop to ask me questions. Implement the complete project in the current workspace.
+
+---
+
+## 2. Product Vision
+
+**Product:** Nightwatch AI  
+**Category:** AI-powered incident investigation and reliability engineering platform  
+**Tagline:** “Detect faster. Investigate smarter. Recover with confidence.”
+
+Nightwatch AI is an intelligent incident-response platform that helps engineering teams investigate production incidents.
+
+It collects application logs, system metrics, deployment events, and incident reports. Its anomaly-detection engine identifies unusual patterns, correlates evidence, ranks likely root causes, and generates actionable remediation recommendations.
+
+The system must support human approval before executing potentially disruptive actions. After an approved fix, it checks application health and determines whether the incident has actually recovered.
+
+### Core workflow
+
+1. Ingest application logs, metrics, and deployment events.
+2. Normalize and validate incoming telemetry.
+3. Detect anomalies using machine-learning models and configurable rules.
+4. Create or update incidents based on detected events.
+5. Correlate events and retrieve relevant historical incidents.
+6. Rank potential root causes and display supporting evidence.
+7. Generate a structured investigation report and recommended fixes.
+8. Require authorized human approval before executing remediation.
+9. Execute only explicitly configured, permitted actions.
+10. Verify recovery using post-action health checks.
+11. Record the complete investigation and remediation audit trail.
+
+The platform must never claim that an AI-generated explanation is a proven root cause. Display confidence, evidence, timestamps, and uncertainty wherever appropriate.
+
+---
+
+## 3. Mandatory Technology Stack
+
+Use this stack consistently throughout the application. Do not replace it with an unrelated backend framework or ML platform.
+
+### Frontend
+
+- React with Vite
+- TypeScript
+- Tailwind CSS
+- shadcn/ui for reusable UI components
+- Recharts for charts and analytics
+- Lucide React for icons
+- React Router for navigation
+- TanStack Query for server-state management
+- Axios for HTTP requests
+- React Hook Form and Zod for validated forms
+
+### Backend
+
+- Python 3.12+
+- FastAPI
+- Pydantic v2 for validation and schemas
+- SQLAlchemy 2.x ORM
+- Alembic for database migrations
+- PostgreSQL as the primary relational database
+- Redis for caching, task coordination, and temporary state
+- Celery for asynchronous background jobs
+
+### AI and Machine Learning
+
+- pandas and NumPy for data processing
+- scikit-learn for anomaly detection and model evaluation
+- Isolation Forest as the initial unsupervised anomaly-detection model
+- Rule-based detection for known operational failure patterns
+- A modular root-cause ranking engine using correlated events, timing, service dependencies, and historical incidents
+- An optional LLM provider abstraction for generating investigation summaries, explanations, and remediation suggestions
+
+Do not require a paid LLM API for core functionality. Provide a deterministic fallback that works without an API key. Never claim to have trained a model on real production data unless the training process and dataset actually exist.
+
+### Infrastructure and Observability
+
+- Docker and Docker Compose
+- Redis and Celery workers
+- Prometheus for metrics collection
+- Grafana dashboards for operational observability
+- Python logging with structured JSON output
+- Pytest for backend testing
+- Vitest and React Testing Library for frontend testing
+- GitHub Actions for CI
+- Environment variables for all secrets and environment-specific settings
+
+### Architecture
+
+Use a modular monolith with separate frontend, API, worker, ML, database, and monitoring components. Keep the code organized so individual components can be separated into services later if needed.
+
+---
+
+## 4. Design Direction and Branding
+
+Create a premium, modern, dark-first cybersecurity and SRE SaaS interface.
+
+The product should feel like a serious infrastructure observability platform used by professional engineering teams—not a generic AI chatbot or a template dashboard.
+
+### Visual identity
+
+- Product name: NIGHTWATCH AI
+- Primary background: near-black navy
+- Secondary surfaces: deep slate
+- Accent: electric cyan
+- Secondary accent: restrained violet
+- Critical alerts: red
+- Warnings: amber
+- Healthy systems: green
+- Typography: clean, technical, highly legible
+- Icons: Lucide React
+- Charts: consistent dark-theme visualizations
+- Borders: subtle, low-contrast outlines
+- Cards: restrained depth, clear hierarchy, minimal unnecessary decoration
+
+Use a professional font such as Inter or Geist.
+
+Use smooth, subtle transitions, clear loading states, useful hover effects, and responsive layouts. Avoid excessive gradients, oversized headings, random glow effects, and excessive rounded cards.
+
+The dashboard should be information-dense but easy to scan.
+
+Provide dark and light themes if practical, with dark mode as the default.
+
+### Main navigation
+
+Build a collapsible sidebar with:
+
+- Overview
+- Incidents
+- Investigations
+- Services
+- Telemetry
+- ML Insights
+- Remediation
+- Incident History
+- Integrations
+- Audit Logs
+- Settings
+
+Include a top navigation bar with a global search field, notification center, environment selector, API/service health indicator, and user profile menu.
+
+Every visible navigation item must lead to a real page or a clearly implemented placeholder with an explanation. Do not create dead links.
+
+---
+
+## 5. Authentication and Authorization
+
+Implement a proper authentication system.
+
+Requirements:
+
+- User registration and login
+- Secure password hashing
+- Short-lived access tokens
+- Secure refresh-token handling
+- Logout and token invalidation
+- Current-user profile endpoint
+- Protected frontend routes
+- Backend authentication dependencies
+- Role-based access control
+
+Roles:
+
+**Admin**
+- Manage users, environments, services, integrations, and policies.
+- View audit logs.
+- Approve and configure remediation policies.
+
+**Engineer**
+- Investigate incidents.
+- Inspect telemetry.
+- Create incident reports.
+- Request and approve remediation when authorized.
+
+**Viewer**
+- Read dashboards, incidents, and investigation reports.
+- Cannot modify configuration or execute remediation.
+
+Enforce permissions in the backend, not only in the frontend.
+
+Do not hardcode production credentials or store plaintext passwords. Add a documented development-only seed process.
+
+---
+
+## 6. Main Dashboard
+
+Create a fully functional overview page.
+
+### KPI cards
+
+Display:
+
+- Total incidents
+- Open incidents
+- Critical incidents
+- Mean time to acknowledge (MTTA)
+- Mean time to resolve (MTTR)
+- Anomalies detected
+- Services degraded
+- Remediation success rate
+
+Compute these values from the database and telemetry where available. Clearly label calculated metrics and explain the time window used.
+
+### Dashboard visualizations
+
+Include:
+
+1. Incident volume over time.
+2. Incident severity distribution.
+3. Service health and availability.
+4. Anomaly score trends.
+5. Mean time to resolution trends.
+6. Incident categories and frequency.
+7. Recent deployment events.
+8. Recent investigations.
+9. Service dependency health.
+10. A live activity feed.
+
+Provide time-range filters such as 1 hour, 24 hours, 7 days, and 30 days.
+
+Charts must use API data. If demo data is enabled, identify it as simulated.
+
+### System status
+
+Show API status, database status, worker status, Redis status, and telemetry ingestion status.
+
+Use actual health checks wherever possible. Display unknown or unavailable states honestly instead of assuming every service is healthy.
+
+---
+
+## 7. Incident Management
+
+Build a complete incident-management module.
+
+### Incident list
+
+Include:
+
+- Incident ID
+- Title
+- Severity
+- Status
+- Affected service
+- Environment
+- Anomaly score
+- Created timestamp
+- Last updated timestamp
+- Assigned engineer
+- Root-cause investigation status
+
+Add search, sorting, pagination, filtering, and severity-based highlighting.
+
+Filters should include:
+
+- Critical, high, medium, low
+- Open, investigating, mitigated, resolved
+- Service
+- Environment
+- Date range
+- Assigned engineer
+
+### Incident details
+
+Each incident should have its own detail page containing:
+
+- Incident summary
+- Severity and lifecycle status
+- Affected services
+- Incident timeline
+- Related logs
+- Related metrics
+- Deployment events
+- Anomaly detection results
+- Investigation report
+- Ranked root-cause hypotheses
+- Supporting and contradictory evidence
+- Recommended remediation actions
+- Approval and execution history
+- Recovery verification results
+- Comments and investigation notes
+
+Allow engineers to change incident status, assign incidents, add notes, and trigger investigations.
+
+All changes must persist in PostgreSQL.
+
+Use optimistic updates only when failures can be rolled back or clearly communicated.
+
+---
+
+## 8. Telemetry Ingestion Engine
+
+Implement real ingestion APIs.
+
+### Supported telemetry
+
+- Application logs
+- Structured JSON logs
+- Numeric system metrics
+- Deployment events
+- Service health-check results
+- Manually reported incidents
+
+### Example log event
+
+{
+  "timestamp": "2026-10-21T10:30:00Z",
+  "service": "payment-api",
+  "environment": "production",
+  "level": "ERROR",
+  "message": "Database connection timeout",
+  "trace_id": "trace-demo-001",
+  "metadata": {
+    "region": "ap-south-1",
+    "latency_ms": 5000
+  }
+}
+
+Treat this as an illustrative schema and validate incoming data using Pydantic.
+
+### Required capabilities
+
+- Batch and individual ingestion
+- Timestamp normalization
+- Required-field validation
+- Structured log parsing
+- Service and environment identification
+- Deduplication using event IDs or idempotency keys
+- Configurable retention policies
+- Pagination for telemetry queries
+- Filtering by service, level, time, and environment
+- Input size limits
+- API-key authentication for machine ingestion
+- Rate limiting
+- Clear validation errors
+- Background processing for expensive operations
+
+Provide endpoints for ingesting logs, metrics, deployment events, and health-check results.
+
+Store normalized events in PostgreSQL. Use indexes on common filtering fields. Do not store unlimited raw telemetry indefinitely.
+
+---
+
+## 9. AI/ML Anomaly Detection Engine
+
+Implement a real machine-learning pipeline using scikit-learn.
+
+### Data preparation
+
+Create a reusable preprocessing pipeline that:
+
+- Validates incoming records.
+- Converts timestamps into usable time features.
+- Handles missing and invalid values.
+- Aggregates log counts by service and time window.
+- Extracts error rates and warning rates.
+- Calculates latency statistics when available.
+- Derives deployment-related features.
+- Scales numerical features where required.
+- Produces a consistent feature matrix for training and inference.
+
+Keep feature engineering in a separate, testable module.
+
+### Initial model
+
+Use Isolation Forest to identify anomalous operational patterns.
+
+Potential features:
+
+- Error count per interval
+- Error rate
+- Request count
+- Average latency
+- P95 latency
+- Timeout count
+- CPU utilization
+- Memory utilization
+- Restart count
+- Recent deployment indicator
+- Database connection failure count
+
+Use only features actually present in the input. Do not fabricate missing production metrics.
+
+### Model requirements
+
+Implement:
+
+- Training pipeline
+- Model serialization
+- Model loading
+- Prediction API
+- Anomaly score calculation
+- Configurable decision threshold
+- Model version tracking
+- Training-data validation
+- Prediction error handling
+- Evaluation on labeled synthetic data
+- Model metadata and training timestamp
+
+Document the score interpretation carefully. Normalize the model's decision function into a consistent internal anomaly score if needed.
+
+Do not treat an Isolation Forest score as a calibrated probability of failure.
+
+If no trained model exists, expose an explicit model-not-ready state and support a documented demo or training workflow. Do not silently pretend that a real model is operating.
+
+### Detection output
+
+Return a structured result containing:
+
+- Event or time-window identifier
+- Service and environment
+- Anomaly score
+- Severity classification
+- Contributing feature values
+- Detection method
+- Model version
+- Detection timestamp
+- Evidence references
+
+Combine ML results with deterministic operational rules for obvious conditions such as repeated database timeouts or sustained high error rates.
+
+---
+
+## 10. Root-Cause Investigation Agent
+
+Build a modular investigation engine that collects evidence and produces ranked root-cause hypotheses.
+
+Do not rely on an LLM alone to determine root causes.
+
+### Investigation process
+
+1. Retrieve the incident and affected service.
+2. Load relevant logs and metric windows.
+3. Retrieve recent deployment events.
+4. Find correlated errors across services.
+5. Inspect available dependency relationships.
+6. Compare current telemetry with historical baselines.
+7. Retrieve similar resolved incidents.
+8. Generate and rank plausible root-cause hypotheses.
+9. Attach supporting evidence and timestamps.
+10. Produce a structured investigation report.
+
+### Example investigation
+
+Incident: Payment API latency spike.
+
+Available evidence:
+
+- P95 latency increased from 250 ms to 4,800 ms.
+- Database connection timeouts increased.
+- A database configuration deployment occurred shortly before the incident.
+- The payment service depends on the affected database.
+
+Potential hypothesis:
+
+Database connection exhaustion following the recent configuration deployment.
+
+The system must present this as a hypothesis, cite the relevant evidence, explain why it was ranked highly, and show what additional checks could confirm or disprove it.
+
+### Root-cause ranking
+
+Build a deterministic ranking engine using available signals such as:
+
+- Temporal proximity
+- Error correlation
+- Service dependency relationships
+- Anomaly severity
+- Recent deployment changes
+- Similar historical incidents
+- Repeated error signatures
+
+Return multiple hypotheses when appropriate, with a relative ranking score and explicit evidence references.
+
+Do not label the ranking score as a probability unless it has been statistically calibrated.
+
+### Investigation report structure
+
+- Executive summary
+- Incident impact
+- Detection method
+- Event timeline
+- Affected services
+- Ranked hypotheses
+- Supporting evidence
+- Contradictory evidence
+- Recommended verification steps
+- Recommended remediation
+- Confidence explanation
+- Remaining uncertainties
+
+If an LLM provider is configured, use it to improve readable explanations from the structured evidence. Validate its output and never allow model-generated text to bypass authorization or remediation policies.
+
+---
+
+## 11. Remediation and Recovery Verification
+
+Build a safe, human-in-the-loop remediation workflow.
+
+### Remediation lifecycle
+
+PROPOSED → PENDING APPROVAL → APPROVED → EXECUTING → VERIFYING → SUCCEEDED / FAILED
+
+Include cancellation and rejection paths where appropriate.
+
+### Initial supported remediation actions
+
+Implement a plugin-style action registry with tightly scoped actions such as:
+
+- Run an HTTP health check.
+- Verify service availability.
+- Recheck error rates.
+- Inspect post-action latency.
+- Execute a configured, harmless diagnostic command.
+- Invoke an explicitly configured, allowlisted webhook.
+
+Support a mock remediation adapter for local development.
+
+Do not implement arbitrary shell execution, unrestricted remote access, automatic destructive database operations, or unrestricted cloud administration.
+
+### Approval requirements
+
+- Require explicit approval for actions that change system state.
+- Verify the approving user's permissions.
+- Show the exact proposed action and its parameters.
+- Record the approver and approval timestamp.
+- Validate the target against an allowlist.
+- Use timeouts and idempotency where applicable.
+- Record action output and failure details.
+- Provide a cancellation mechanism where supported.
+
+### Recovery verification
+
+After an action, check configured health endpoints and compare available metrics with predefined recovery thresholds.
+
+A remediation is successful only if the verification criteria pass. If verification fails or times out, mark the result as failed or inconclusive and preserve the evidence.
+
+Do not claim an incident has been fixed merely because a command returned exit code zero.
+
+---
+
+## 12. Investigation and Incident History
+
+Create a searchable incident knowledge base.
+
+Store:
+
+- Incident details
+- Event timeline
+- Related evidence references
+- Investigation hypotheses
+- Final resolution notes
+- Remediation attempts
+- Recovery verification outcomes
+- Model version
+- Service and environment
+- Resolution duration
+
+Provide filters and similarity-based retrieval using error signatures, service, incident category, and telemetry features.
+
+Use a straightforward PostgreSQL-based approach first. Keep the retrieval layer modular so vector search can be added later without redesigning the whole system.
+
+Display similar incidents in the investigation interface and explain why each historical incident is relevant.
+
+---
+
+## 13. Services and Dependency Map
+
+Create a service inventory with:
+
+- Service name
+- Description
+- Environment
+- Owner
+- Health status
+- Last health check
+- Error rate
+- Latency
+- Recent incidents
+- Dependencies
+
+Build an interactive dependency visualization showing relationships between services.
+
+Use available service dependency data and clearly distinguish configured dependencies from relationships inferred from observed telemetry.
+
+Clicking a service should open its detail page with associated incidents, telemetry, health trends, and dependency information.
+
+---
+
+## 14. ML Insights Page
+
+Create a dedicated machine-learning operations page.
+
+Show:
+
+- Active model
+- Model version
+- Training status
+- Last training time
+- Feature schema
+- Anomaly score distribution
+- Detection volume over time
+- False-positive review workflow where labels are available
+- Labeled evaluation metrics
+- Prediction errors
+- Model readiness
+- Recent training runs
+
+Support a protected model-training job using an available dataset.
+
+Only show precision, recall, F1 score, or other evaluation metrics when an appropriate labeled evaluation dataset exists. Explain when metrics are unavailable because the model is unsupervised or no labeled dataset has been provided.
+
+Include a sample-data generator for reproducible development and evaluation.
+
+---
+
+## 15. Background Processing
+
+Use Celery with Redis for long-running or asynchronous tasks.
+
+Implement background tasks for:
+
+- Telemetry normalization
+- Anomaly detection
+- Incident correlation
+- Investigation generation
+- Historical incident retrieval
+- Model training
+- Remediation execution
+- Recovery verification
+- Retention cleanup
+
+Tasks must support retries where appropriate, bounded retry counts, timeouts, and clear failure states.
+
+Prevent duplicate processing through idempotency keys or equivalent safeguards.
+
+Expose task status to the frontend so users can see whether an investigation is queued, running, completed, or failed.
+
+Do not make long-running ML training or remediation block an ordinary API request.
+
+---
+
+## 16. PostgreSQL Database Design
+
+Design normalized, maintainable database models with appropriate indexes and relationships.
+
+Include tables or equivalent models for:
+
+- users
+- refresh_tokens or token_sessions
+- services
+- environments
+- service_dependencies
+- incidents
+- incident_events
+- telemetry_logs
+- metric_samples or metric_aggregates
+- deployment_events
+- anomaly_detections
+- investigations
+- root_cause_hypotheses
+- evidence_references
+- remediation_actions
+- remediation_approvals
+- remediation_executions
+- recovery_checks
+- model_versions
+- model_training_runs
+- integration_configs
+- audit_logs
+- incident_comments
+
+Use UUIDs for primary identifiers where appropriate, UTC timestamps, database constraints, and sensible cascading behavior.
+
+Avoid placing unlimited logs, secrets, or large binary model files directly in ordinary relational records.
+
+Store large artifacts in a suitable filesystem or object-storage adapter and save their references and metadata in PostgreSQL.
+
+Use Alembic migrations. Provide an initial migration and a repeatable development seed script.
+
+---
+
+## 17. FastAPI API Design
+
+Expose a versioned API under `/api/v1`.
+
+Implement endpoints for the following functional areas:
+
+- Authentication and user profile
+- Dashboard statistics
+- Incident listing, creation, and details
+- Incident assignment and status changes
+- Investigation creation and status
+- Investigation report retrieval
+- Log ingestion and log search
+- Metric ingestion and metric queries
+- Deployment event ingestion
+- Anomaly detection and detection history
+- Model information and authorized training jobs
+- Service inventory and dependency data
+- Remediation proposals and approval
+- Remediation execution status
+- Recovery verification results
+- Incident history and similar incidents
+- Integration configuration
+- Audit log search
+- Application and dependency health
+
+Example routes:
+
+POST `/api/v1/telemetry/logs`
+
+POST `/api/v1/telemetry/metrics`
+
+POST `/api/v1/telemetry/deployments`
+
+GET `/api/v1/incidents`
+
+GET `/api/v1/incidents/{incident_id}`
+
+POST `/api/v1/incidents/{incident_id}/investigations`
+
+GET `/api/v1/investigations/{investigation_id}`
+
+GET `/api/v1/services`
+
+GET `/api/v1/models/status`
+
+POST `/api/v1/models/train`
+
+POST `/api/v1/remediations/{remediation_id}/approve`
+
+GET `/api/v1/health`
+
+Adapt the endpoint design when necessary, but maintain consistent REST conventions, authentication, validation, pagination, and error responses.
+
+Use OpenAPI documentation generated by FastAPI.
+
+Add request correlation IDs and structured error logging. Never return raw stack traces or internal secrets to clients.
+
+---
+
+## 18. Frontend Pages and User Experience
+
+Implement all of the following pages:
+
+### A. Login and Registration
+A polished authentication interface with form validation, loading states, and meaningful error messages.
+
+### B. Overview Dashboard
+Operational KPIs, charts, active incidents, service health, and live activity.
+
+### C. Incidents
+Searchable, filterable incident table with severity and lifecycle indicators.
+
+### D. Incident Detail
+A complete incident investigation workspace with tabs for overview, timeline, logs, metrics, hypotheses, remediation, and audit history.
+
+### E. Investigation Workspace
+Show investigation progress, retrieved evidence, root-cause hypotheses, supporting signals, and generated reports.
+
+### F. Telemetry Explorer
+Search and inspect structured logs, metrics, and deployment events.
+
+### G. Services
+Service inventory, health indicators, dependencies, and service-level trends.
+
+### H. ML Insights
+Model status, anomaly charts, training history, feature information, and evaluation results.
+
+### I. Remediation Center
+Proposed actions, approval requests, execution history, and verification results.
+
+### J. Incident History
+Searchable resolved incidents and similar-incident recommendations.
+
+### K. Integrations
+Configuration pages for telemetry sources, webhooks, and optional observability integrations.
+
+### L. Audit Logs
+Searchable records of authentication-sensitive and administrative actions, approvals, and remediation events.
+
+### M. Settings
+User profile, appearance, environment preferences, security settings, and authorized administrative configuration.
+
+### Interaction requirements
+
+Every major action must work:
+
+- Create and inspect incidents.
+- Start investigations.
+- Filter logs and incidents.
+- Switch service and environment filters.
+- Review evidence.
+- Approve or reject eligible remediation requests.
+- View task progress.
+- Inspect completed reports.
+- Change incident status.
+- Navigate between related services and incidents.
+- Configure supported integrations.
+- Search historical incidents.
+
+Include skeleton loaders, empty states, retry controls, confirmation dialogs, accessible form labels, and useful notifications.
+
+Avoid buttons that do nothing. If a capability requires a missing external service, explain the limitation in the interface and provide a supported demo or configuration flow.
+
+---
+
+## 19. Demo Mode and Synthetic Dataset
+
+The application must be demonstrable locally without paid APIs, external cloud accounts, or real production infrastructure.
+
+Build a deterministic demo mode that seeds PostgreSQL with realistic but explicitly simulated records.
+
+Include:
+
+- Multiple services
+- Development and production-like environments
+- Historical logs
+- Latency and error-rate metrics
+- Deployment events
+- Resolved incidents
+- Open incidents
+- Simulated anomalies
+- Investigation hypotheses
+- Sample remediation proposals
+- Recovery-check results
+
+Create at least three incident scenarios:
+
+**Scenario 1: Database Connection Exhaustion**
+Repeated connection timeouts, increasing API latency, and a preceding database configuration deployment.
+
+**Scenario 2: Memory Pressure**
+Increasing memory utilization, repeated worker restarts, and growing request latency.
+
+**Scenario 3: Deployment-Related Error Spike**
+A deployment followed by elevated HTTP 5xx responses and a degraded health check.
+
+Include a baseline healthy scenario as well.
+
+The sample data must exercise the actual ingestion, feature engineering, detection, incident creation, investigation, and dashboard code paths wherever practical.
+
+Use deterministic fixtures for repeatable testing. Do not populate the live dashboard with hardcoded frontend-only values.
+
+Clearly mark simulated records and demo execution results so they cannot be mistaken for real infrastructure observations.
+
+---
+
+## 20. Prometheus and Grafana
+
+Configure Prometheus to scrape the FastAPI application's metrics endpoint.
+
+Expose useful application metrics, such as:
+
+- HTTP request counts
+- HTTP request duration
+- HTTP error counts
+- Telemetry ingestion counts
+- Detection execution duration
+- Detected anomaly counts
+- Investigation job duration
+- Background task failures
+- Remediation outcomes
+
+Avoid high-cardinality labels such as raw user IDs, trace IDs, incident IDs, or arbitrary log messages.
+
+Provide:
+
+- Prometheus configuration
+- Grafana provisioning configuration
+- At least one useful Grafana dashboard
+- Docker Compose integration
+- Documentation for accessing the monitoring interfaces
+
+Do not confuse monitoring the Nightwatch application itself with monitoring external services. External service monitoring must be configured through real data sources or explicitly simulated adapters.
+
+---
+
+## 21. Security Requirements
+
+Apply security best practices throughout the project.
+
+- Validate all user input.
+- Hash passwords using a suitable password-hashing library.
+- Protect secrets with environment variables.
+- Enforce authorization on every sensitive backend operation.
+- Rate-limit authentication and ingestion endpoints.
+- Restrict CORS to configured origins.
+- Apply secure HTTP headers where appropriate.
+- Prevent SQL injection using ORM parameterization.
+- Protect against unsafe file uploads if file upload is implemented.
+- Set request size limits.
+- Validate webhook destinations and block unauthorized targets.
+- Prevent SSRF through arbitrary URL fetching.
+- Use safe subprocess handling, preferably avoiding subprocesses entirely for remediation.
+- Never expose secrets in logs or API responses.
+- Record privileged actions in audit logs.
+- Separate demo credentials from production configuration.
+- Provide safe defaults for all remediation integrations.
+
+Do not hardcode production credentials, private keys, access tokens, database passwords, or API keys anywhere in the source code.
+
+---
+
+## 22. Project Folder Structure
+
+Organize the repository approximately as follows:
+
+nightwatch-ai/
+  frontend/
+    src/
+      components/
+      layouts/
+      pages/
+      features/
+      hooks/
+      services/
+      types/
+      utils/
+      router/
+    public/
+    package.json
+    Dockerfile
+
+  backend/
+    app/
+      api/
+        v1/
+      core/
+      db/
+      models/
+      schemas/
+      repositories/
+      services/
+      ml/
+        preprocessing/
+        features/
+        training/
+        inference/
+        evaluation/
+      investigation/
+      remediation/
+      workers/
+      integrations/
+      observability/
+      main.py
+    migrations/
+    tests/
+    requirements.txt
+    Dockerfile
+
+  monitoring/
+    prometheus/
+    grafana/
+
+  scripts/
+    seed_demo.py
+    generate_demo_data.py
+
+  docs/
+    architecture.md
+    api.md
+    ml-pipeline.md
+    deployment.md
+    security.md
+
+  .github/
+    workflows/
+
+  docker-compose.yml
+  .env.example
+  .gitignore
+  README.md
+
+Adjust the structure where it improves maintainability, but keep frontend, backend, ML logic, background workers, infrastructure, tests, and documentation clearly separated.
+
+Do not commit virtual environments, `node_modules`, model binaries, secrets, production logs, or generated temporary files.
+
+---
+
+## 23. Docker and Local Development
+
+Create a complete Docker Compose environment containing:
+
+- Frontend
+- FastAPI backend
+- PostgreSQL
+- Redis
+- Celery worker
+- Celery scheduler if periodic jobs require one
+- Prometheus
+- Grafana
+
+Add health checks, service dependencies, persistent database storage, and appropriate internal networking.
+
+Provide a `.env.example` with documented variables for:
+
+- Application environment
+- Database connection
+- Redis connection
+- JWT or session secrets
+- CORS origins
+- Demo mode
+- Model configuration
+- Optional LLM provider
+- Ingestion API keys
+- Observability settings
+
+Do not put real secrets in `.env.example`.
+
+Include clear instructions to create a local `.env`, start the containers, apply migrations, seed demo data, and access the application.
+
+The system should start from a documented sequence of commands without manually editing source files.
+
+Do not claim Docker startup or service health has been verified unless you actually run the checks.
+
+---
+
+## 24. Testing Requirements
+
+Write real automated tests.
+
+### Backend tests
+
+- Authentication and authorization
+- Input validation
+- Incident CRUD operations
+- Telemetry ingestion
+- Duplicate event handling
+- Feature preprocessing
+- Anomaly detection
+- Model readiness and failure handling
+- Investigation evidence retrieval
+- Root-cause ranking
+- Remediation approval
+- Unauthorized remediation rejection
+- Recovery verification
+- Audit logging
+- Health endpoints
+
+### Frontend tests
+
+- Login and form validation
+- Protected navigation
+- Dashboard rendering
+- Incident filtering
+- Incident detail display
+- Investigation progress
+- Remediation approval workflow
+- API error states
+- Empty states
+
+Use isolated test data and avoid requiring a real production database or paid API.
+
+Create a CI workflow that installs dependencies, runs tests, and checks code quality.
+
+---
+
+## 25. Documentation
+
+Create a professional README that includes:
+
+- Project overview
+- Problem statement
+- Product capabilities
+- System architecture
+- Technology stack
+- Architecture diagram using Mermaid
+- Installation instructions
+- Environment setup
+- Database migration steps
+- Demo data generation
+- ML training and inference workflow
+- API documentation
+- Test commands
+- Prometheus and Grafana setup
+- Security notes
+- Current limitations
+- Deployment instructions
+- Screenshots section with placeholders until real screenshots exist
+
+Explain the distinction between deterministic rules, unsupervised anomaly detection, root-cause ranking, and optional LLM-generated summaries.
+
+Document which integrations work out of the box and which require external configuration.
+
+---
+
+## 26. Engineering Standards
+
+Follow these rules throughout implementation:
+
+1. Build actual functionality rather than visual-only simulations.
+2. Use TypeScript types and Pydantic schemas consistently.
+3. Keep route handlers thin and move business logic into services.
+4. Separate ML feature engineering, model training, and inference.
+5. Keep database access behind reusable repository or service abstractions where appropriate.
+6. Use asynchronous FastAPI handlers appropriately without blocking the event loop.
+7. Run expensive work in Celery.
+8. Use database transactions for multi-step state changes.
+9. Validate every API boundary.
+10. Add meaningful error handling and structured logs.
+11. Use pagination for potentially large result sets.
+12. Make ingestion and background jobs idempotent where necessary.
+13. Keep all timestamps in UTC internally.
+14. Use consistent severity, incident-status, and task-status enums.
+15. Never expose internal implementation details to unauthorized users.
+16. Do not use fabricated evaluation metrics or fake model confidence.
+17. Keep interfaces responsive and accessible.
+18. Do not leave essential features as TODOs or empty functions.
+19. Do not create fake integrations that claim to connect to external systems.
+20. Prefer a smaller, fully functional feature over a larger collection of broken features.
+
+---
+
+## 27. Implementation Order
+
+Execute the following stages autonomously without asking me to approve each stage.
+
+**Stage 1 — Foundation**
+- Inspect the workspace.
+- Set up the repository.
+- Configure frontend and backend.
+- Configure Docker Compose.
+- Add environment configuration and database migrations.
+
+**Stage 2 — Backend Core**
+- Implement authentication and RBAC.
+- Implement database models.
+- Implement incident, service, telemetry, and audit APIs.
+- Add validation, pagination, and tests.
+
+**Stage 3 — Frontend**
+- Implement branding, layout, routing, authentication, and dashboard.
+- Build incident, service, telemetry, investigation, and settings pages.
+- Connect the interface to the actual API.
+
+**Stage 4 — ML Pipeline**
+- Implement preprocessing and feature engineering.
+- Train and evaluate Isolation Forest on synthetic data.
+- Implement model loading, scoring, and model-status reporting.
+- Add anomaly detection tests.
+
+**Stage 5 — Investigation Engine**
+- Implement evidence retrieval.
+- Implement event correlation and root-cause ranking.
+- Generate structured reports.
+- Add optional LLM summaries with a deterministic fallback.
+
+**Stage 6 — Async Processing and Remediation**
+- Add Redis and Celery.
+- Implement asynchronous investigations.
+- Add approval-controlled remediation.
+- Add post-action recovery checks and audit events.
+
+**Stage 7 — Monitoring and Integrations**
+- Configure Prometheus and Grafana.
+- Implement integration configuration and health reporting.
+- Add supported telemetry adapters.
+
+**Stage 8 — Verification**
+- Run database migrations.
+- Seed demo data.
+- Run backend and frontend tests.
+- Build the frontend.
+- Check Docker Compose configuration.
+- Fix issues discovered by actual checks.
+- Update documentation with verified commands.
+
+---
+
+## 28. Definition of Done
+
+The project is complete only when the following requirements are satisfied:
+
+- The frontend builds successfully.
+- The backend starts successfully.
+- PostgreSQL migrations work.
+- Demo data can be generated.
+- Authentication and authorization are implemented.
+- Dashboard values come from backend APIs.
+- Telemetry can be ingested and queried.
+- The ML pipeline can train on synthetic data and produce anomaly scores.
+- The system can create and inspect incidents.
+- Investigations can retrieve evidence and rank root-cause hypotheses.
+- Remediation requires authorization and approval.
+- Recovery verification produces explicit outcomes.
+- Incident history and audit records persist.
+- Background processing is implemented.
+- Monitoring configuration is provided.
+- Automated tests are present and run successfully.
+- Installation instructions are complete.
+- No critical workflow relies exclusively on hardcoded frontend data.
+- Missing external integrations are clearly identified rather than falsely reported as connected.
+
+If a full production integration cannot be completed without credentials or infrastructure, implement a clean adapter interface, a safe local mock, a configuration screen, and explicit documentation of the remaining setup.
+
+## 29. Final Execution Instructions
+
+Start implementing Nightwatch AI now.
+
+First inspect the available project workspace and determine which files already exist. Preserve useful existing work and avoid unnecessarily overwriting files.
+
+Then build the application in the current workspace, creating and editing the necessary files directly.
+
+Do not respond with only a plan, tutorial, architecture proposal, or isolated code snippets. Execute the implementation.
+
+Prioritize a functioning end-to-end workflow over decorative complexity. Make sure the frontend, backend, database, ML pipeline, worker, and remediation workflow fit together.
+
+After implementation, report:
+
+1. What was built.
+2. The final folder structure.
+3. The main features that actually work.
+4. The exact commands to install and run it.
+5. The local URLs for the frontend, API documentation, Prometheus, and Grafana.
+6. How to seed and use demo incidents.
+7. Which tests and build checks were actually executed and whether they passed.
+8. Which external integrations still require credentials or additional setup.
+9. Any known limitations.
+
+Never claim that a component works, a test passes, or a deployment succeeds unless the result has been verified.
+
+**Final objective:** Deliver Nightwatch AI as a polished, technically credible, end-to-end AI/SRE project that demonstrates backend engineering, applied machine learning, asynchronous processing, observability, security, and safe incident remediation.

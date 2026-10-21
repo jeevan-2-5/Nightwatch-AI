@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # Frontend & Interactive Preview
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - nightwatch-net
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nightwatch:nightwatch_secure_pass@postgres:5432/nightwatch_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nightwatch-net
+
+  # Celery Asynchronous Worker
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A app.workers.celery_app worker --loglevel=info -c 4
+    environment:
+      - DATABASE_URL=postgresql://nightwatch:nightwatch_secure_pass@postgres:5432/nightwatch_db
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - nightwatch-net
+
+  # PostgreSQL 16
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nightwatch
+      POSTGRES_PASSWORD: nightwatch_secure_pass
+      POSTGRES_DB: nightwatch_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nightwatch -d nightwatch_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nightwatch-net
+
+  # Redis Cache & Broker
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nightwatch-net
+
+  # Prometheus Telemetry Collector
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - nightwatch-net
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:10.3.0
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - nightwatch-net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  nightwatch-net:
+    driver: bridge

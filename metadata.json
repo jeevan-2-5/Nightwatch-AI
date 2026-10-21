@@ -1,0 +1,8 @@
+{
+  "name": "Nightwatch AI - Autonomous Incident Investigation Platform",
+  "description": "Intelligent incident-response and SRE reliability platform with anomaly detection, root-cause correlation, and verified human-in-the-loop remediation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
